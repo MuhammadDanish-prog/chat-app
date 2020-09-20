@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="app.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <title>Document</title>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-database.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  var firebaseConfig = {
+    apiKey: "AIzaSyBiXjlVrov0R7dWsZ7kmvVojCUJBRZP4to",
+    authDomain: "chat-app-8077e.firebaseapp.com",
+    databaseURL: "https://chat-app-8077e.firebaseio.com",
+    projectId: "chat-app-8077e",
+    storageBucket: "chat-app-8077e.appspot.com",
+    messagingSenderId: "1094239087602",
+    appId: "1:1094239087602:web:68a9cd75b24829e04a996b",
+    measurementId: "G-9XG0P2PMZV"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  var myName=prompt("Enter Your Name")
+
+function sendMessage(){
+    var message=document.getElementById("message").value;
+    console.log(message)
+
+    firebase.database().ref("messages").push().set({
+        "sender":myName,
+        "message":message
+
+    });
+    message.value=""
+  return false;
+ 
+
+}
+
+  firebase.database().ref("messages").on("child_added",function(snapshot){
+  var html="";
+  html+="<li id='message-"+snapshot.key+"'>";
+    if(snapshot.val().sender==myName){
+        html+="<button class='btn btn-dark' data-id='"+snapshot.key+"'onclick='deleteMessages(this);'>"
+        ;
+        html+="Delete";
+        html+="</button>";
+    }
+  html+=snapshot.val().sender+ ": "+snapshot.val().message;
+  html+="</li>";
+
+  document.getElementById("messages").innerHTML+=html;
+  message.value=""
+
+});
+
+function deleteMessages(self){
+    var messageid=self.getAttribute("data-id");
+    firebase.database().ref("messages").child(messageid).remove();
+}
+
+firebase.database().ref("messages").on("child_removed",function(snapshot){
+    document.getElementById("message-"+snapshot.key).innerHTML="This message is delete";
+
+});
+
+
+</script>
+</head>
+<body>
+    <div class="header-area">
+        <h1> Danish Chat App </h1>
+    </div>
+    <div class="message-area">
+    <ul id="messages" ></ul>
+</div>
+    <div class="typing-area">
+    <form onsubmit="return sendMessage();">
+        <input id="message" class="typing-box" placeholder="Enter message" autocomplete="off">
+        <input type="submit" class="send-button btn btn-outline-primary" value="send">
+    </div>
+
+    </form>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    
+</body>
+</html>
